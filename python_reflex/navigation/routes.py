@@ -1,0 +1,5 @@
+HOME_ROUTE="/home"
+CATEGORY_ROUTE="/category"
+ELEMENT_ROUTE="/element"
+CALENDAR_ROUTE="/calendar"
+NOTIFICATION_ROUTE="/notification"
