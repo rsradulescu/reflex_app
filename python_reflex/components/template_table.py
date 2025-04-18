@@ -1,7 +1,6 @@
 import reflex as rx
-from ..backend.backend import State, Customer
-from ..components.from_field import form_field
-from ..components.status_badges import status_badge
+from ..backend.category import State, Customer
+from .form_field import form_field
 
 
 def show_customer(user: Customer):

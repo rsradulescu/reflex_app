@@ -11,7 +11,7 @@ def home_page() -> rx.Component:
             rx.vstack(
                 rx.heading("Expire", size="9"),
                 rx.text(
-                    "Welcome",
+                    "Bienvenido",
                     align="right",
                     size="5",
                 ),

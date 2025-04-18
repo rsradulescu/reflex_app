@@ -3,3 +3,7 @@ __pycache__/
 assets/external/
 *.db
 .web
+alembic/
+./alembic/
+alembic
+alembic.ini

@@ -1,37 +1,25 @@
 import reflex as rx
-from ..backend.backend import State, Customer
-from .from_field import form_field
-from .status_badges import status_badge
+from ..backend.category import State, Category
+from .form_field import form_field
 
-
-def show_customer(user: Customer):
-    """Show a customer in a table row."""
+def show_category(category: Category):
+    """Show a category in a table row."""
 
     return rx.table.row(
-        rx.table.cell(user.name),
-        rx.table.cell(user.email),
-        rx.table.cell(user.phone),
-        rx.table.cell(user.address),
-        rx.table.cell(f"${user.payments:,}"),
-        rx.table.cell(user.date),
-        rx.table.cell(
-            rx.match(
-                user.status,
-                ("Delivered", status_badge("Delivered")),
-                ("Pending", status_badge("Pending")),
-                ("Cancelled", status_badge("Cancelled")),
-                status_badge("Pending"),
-            )
-        ),
+        rx.table.cell(category.name),
+        rx.table.cell(category.description),
+        rx.table.cell(category.date),
+        rx.table.cell([category.subcategories]),
         rx.table.cell(
             rx.hstack(
-                update_customer_dialog(user),
-                rx.icon_button(
+                update_category_dialog(category),
+                rx.button(
                     rx.icon("trash-2", size=22),
-                    on_click=lambda: State.delete_customer(getattr(user, "id")),
+                    rx.text("Borrar", size="3"),
                     size="2",
                     variant="solid",
                     color_scheme="red",
+                    on_click=lambda: State.delete_category(getattr(category, "id")),
                 ),
             )
         ),
@@ -52,19 +40,19 @@ def add_category_button() -> rx.Component:
         rx.dialog.content(
             rx.hstack(
                 rx.badge(
-                    rx.icon(tag="users", size=34),
+                    rx.icon(tag="album", size=34),
                     color_scheme="grass",
                     radius="full",
                     padding="0.65rem",
                 ),
                 rx.vstack(
                     rx.dialog.title(
-                        "Add New Customer",
+                        "Agregar nueva categoría",
                         weight="bold",
                         margin="0",
                     ),
                     rx.dialog.description(
-                        "Fill the form with the customer's info",
+                        "Completa el formulario con la información de la nueva categoría",
                     ),
                     spacing="1",
                     height="100%",
@@ -81,45 +69,19 @@ def add_category_button() -> rx.Component:
                     rx.flex(
                         # Name
                         form_field(
-                            "Name",
-                            "Customer Name",
-                            "text",
-                            "name",
-                            "user",
+                            label="Nombre",
+                            placeholder="Nombre de Categoría",
+                            type="text",
+                            name="name",
+                            icon="airplay",
                         ),
-                        # Email
+                        # Description
                         form_field(
-                            "Email", "user@reflex.dev", "email", "email", "mail"
-                        ),
-                        # Phone
-                        form_field("Phone", "Customer Phone", "tel", "phone", "phone"),
-                        # Address
-                        form_field(
-                            "Address", "Customer Address", "text", "address", "home"
-                        ),
-                        # Payments
-                        form_field(
-                            "Payment ($)",
-                            "Customer Payment",
-                            "number",
-                            "payments",
-                            "dollar-sign",
-                        ),
-                        # Status
-                        rx.vstack(
-                            rx.hstack(
-                                rx.icon("truck", size=16, stroke_width=1.5),
-                                rx.text("Status"),
-                                align="center",
-                                spacing="2",
-                            ),
-                            rx.radio(
-                                ["Delivered", "Pending", "Cancelled"],
-                                name="status",
-                                direction="row",
-                                as_child=True,
-                                required=True,
-                            ),
+                            label="Descripción", 
+                            placeholder="Esta sección representa..",
+                            type="text",
+                            name="description",
+                            icon="airplay",
                         ),
                         direction="column",
                         spacing="3",
@@ -127,14 +89,14 @@ def add_category_button() -> rx.Component:
                     rx.flex(
                         rx.dialog.close(
                             rx.button(
-                                "Cancel",
+                                "Cancelar",
                                 variant="soft",
                                 color_scheme="gray",
                             ),
                         ),
                         rx.form.submit(
                             rx.dialog.close(
-                                rx.button("Submit Customer"),
+                                rx.button("Categoria agregada"),
                             ),
                             as_child=True,
                         ),
@@ -143,7 +105,7 @@ def add_category_button() -> rx.Component:
                         mt="4",
                         justify="end",
                     ),
-                    on_submit=State.add_customer_to_db,
+                    on_submit=State.add_category_to_db,
                     reset_on_submit=False,
                 ),
                 width="100%",
@@ -158,16 +120,16 @@ def add_category_button() -> rx.Component:
     )
 
 
-def update_customer_dialog(user):
+def update_category_dialog(category):
     return rx.dialog.root(
         rx.dialog.trigger(
             rx.button(
                 rx.icon("square-pen", size=22),
-                rx.text("Edit", size="3"),
+                rx.text("Editar", size="3"),
                 color_scheme="blue",
                 size="2",
                 variant="solid",
-                on_click=lambda: State.get_user(user),
+                on_click=lambda: State.get_category(category),
             ),
         ),
         rx.dialog.content(
@@ -180,12 +142,12 @@ def update_customer_dialog(user):
                 ),
                 rx.vstack(
                     rx.dialog.title(
-                        "Edit Customer",
+                        "Editar categoría",
                         weight="bold",
                         margin="0",
                     ),
                     rx.dialog.description(
-                        "Edit the customer's info",
+                        "Edita la información de la categoría",
                     ),
                     spacing="1",
                     height="100%",
@@ -202,65 +164,21 @@ def update_customer_dialog(user):
                     rx.flex(
                         # Name
                         form_field(
-                            "Name",
-                            "Customer Name",
-                            "text",
-                            "name",
-                            "user",
-                            user.name,
+                            label="Nombre",
+                            placeholder="Nombre de Categoría",
+                            type="text",
+                            name="name",
+                            icon="airplay",
+                            default_value=category.name
                         ),
-                        # Email
+                        # Description
                         form_field(
-                            "Email",
-                            "user@reflex.dev",
-                            "email",
-                            "email",
-                            "mail",
-                            user.email,
-                        ),
-                        # Phone
-                        form_field(
-                            "Phone",
-                            "Customer Phone",
-                            "tel",
-                            "phone",
-                            "phone",
-                            user.phone,
-                        ),
-                        # Address
-                        form_field(
-                            "Address",
-                            "Customer Address",
-                            "text",
-                            "address",
-                            "home",
-                            user.address,
-                        ),
-                        # Payments
-                        form_field(
-                            "Payment ($)",
-                            "Customer Payment",
-                            "number",
-                            "payments",
-                            "dollar-sign",
-                            user.payments.to(str),
-                        ),
-                        # Status
-                        rx.vstack(
-                            rx.hstack(
-                                rx.icon("truck", size=16, stroke_width=1.5),
-                                rx.text("Status"),
-                                align="center",
-                                spacing="2",
-                            ),
-                            rx.radio(
-                                ["Delivered", "Pending", "Cancelled"],
-                                default_value=user.status,
-                                name="status",
-                                direction="row",
-                                as_child=True,
-                                required=True,
-                            ),
+                            label="Descripción", 
+                            placeholder="Esta sección representa..",
+                            type="text",
+                            name="description",
+                            icon="airplay",
+                            default_value=category.description
                         ),
                         direction="column",
                         spacing="3",
@@ -268,14 +186,14 @@ def update_customer_dialog(user):
                     rx.flex(
                         rx.dialog.close(
                             rx.button(
-                                "Cancel",
+                                "Cancelar",
                                 variant="soft",
                                 color_scheme="gray",
                             ),
                         ),
                         rx.form.submit(
                             rx.dialog.close(
-                                rx.button("Update Customer"),
+                                rx.button("Modificar categoría"),
                             ),
                             as_child=True,
                         ),
@@ -284,7 +202,7 @@ def update_customer_dialog(user):
                         mt="4",
                         justify="end",
                     ),
-                    on_submit=State.update_customer_to_db,
+                    on_submit=State.update_category_to_db,
                     reset_on_submit=False,
                 ),
                 width="100%",
@@ -333,14 +251,14 @@ def main_table():
                 ),
             ),
             rx.select(
-                ["name", "email", "phone", "address", "payments", "date", "status"],
-                placeholder="Sort By: Name",
+                ["name", "description", "date"],
+                placeholder="Ordenar por Nombre",
                 size="3",
                 on_change=lambda sort_value: State.sort_values(sort_value),
             ),
             rx.input(
                 rx.input.slot(rx.icon("search")),
-                placeholder="Search here...",
+                placeholder="Buscar aquí...",
                 size="3",
                 max_width="225px",
                 width="100%",
@@ -357,17 +275,14 @@ def main_table():
         rx.table.root(
             rx.table.header(
                 rx.table.row(
-                    _header_cell("Name", "user"),
-                    _header_cell("Email", "mail"),
-                    _header_cell("Phone", "phone"),
-                    _header_cell("Address", "home"),
-                    _header_cell("Payments", "dollar-sign"),
-                    _header_cell("Date", "calendar"),
-                    _header_cell("Status", "truck"),
-                    _header_cell("Actions", "cog"),
+                    _header_cell("Nombre", "clipboard"),
+                    _header_cell("Descripción", "clipboard-pen-line"),
+                    _header_cell("Fecha", "calendar"),
+                    _header_cell("Subcategorías", "ungroup"),
+                    _header_cell("Acción", "cog"),
                 ),
             ),
-            rx.table.body(rx.foreach(State.users, show_customer)),
+            rx.table.body(rx.foreach(State.categories, show_category)),
             variant="surface",
             size="3",
             width="100%",

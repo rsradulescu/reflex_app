@@ -11,7 +11,9 @@ $source venv/bin/activate
 $pip install reflex
 
 3. Init DB (sqlite). Configuration provided in rxconfig.py
-$ reflex db init
+$reflex db init
+$reflex db makemigrations
+$reflex db migrate
 
 4. Inicialice project
 $reflex init

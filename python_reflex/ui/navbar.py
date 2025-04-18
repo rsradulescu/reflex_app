@@ -13,8 +13,8 @@ def navbar_user() -> rx.Component:
             rx.hstack(
                 rx.hstack(
                     rx.image(
-                        src="/calendar-date-icon.jpg",
-                        width="2em",
+                        src="/expire_logo_version2.png",
+                        width="2.5em",
                         height="auto",
                         border_radius="25%",
                     ),
@@ -23,6 +23,7 @@ def navbar_user() -> rx.Component:
                     ),
                     align_items="center",
                 ),
+                rx.spacer(),
                 rx.hstack(
                     navbar_link("Inicio", navigation.routes.HOME_ROUTE),
                     navbar_link("Categoría", navigation.routes.CATEGORY_ROUTE),
@@ -31,6 +32,7 @@ def navbar_user() -> rx.Component:
                     navbar_link("Notificación", navigation.routes.NOTIFICATION_ROUTE),
                     spacing="5",
                 ),
+                rx.divider(orientation="vertical", size="2"),
                 rx.menu.root(
                     rx.menu.trigger(
                         rx.icon_button(
@@ -54,8 +56,8 @@ def navbar_user() -> rx.Component:
             rx.hstack(
                 rx.hstack(
                     rx.image(
-                        src="/calendar-date-icon.jpg",
-                        width="2em",
+                        src="/expire_logo_version2.png",
+                        width="2.5em",
                         height="auto",
                         border_radius="25%",
                     ),
